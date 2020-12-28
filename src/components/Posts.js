@@ -1,24 +1,17 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
+import {fetchPosts} from '../actions/postActions';
 
 class Posts extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            posts: []
-        }
-    }
+    // we no longer need the constructor because the state will come from redux
 
     async componentDidMount() {
-        console.log("hello");
-        let postsData = await fetch('https://jsonplaceholder.typicode.com/posts');
-        let posts = await postsData.json();
-        
-        console.log('Posts: ', posts );
-
-        this.setState({posts: posts});
+        await this.props.fetchPosts();
     }
+
     render() {
-        const postItems = this.state.posts.map(post => (
+        const postItems = this.props.posts.map(post => (
             <div key={post.id}>
                 <h3>{post.title}</h3>
                 <p>{post.body}</p>
@@ -34,5 +27,15 @@ class Posts extends Component {
     }
 }
 
+// we should map our props to propTypes
+Posts.propTypes = {
+    fetchPosts: PropTypes.func.isRequired,
+    posts: PropTypes.array.isRequired
+};
 
-export default Posts;
+const mapStateToProps = state => ({
+    // we are using state.posts because in reducers/index.js posts for the postReducer
+    posts: state.posts.items
+})
+
+export default connect(mapStateToProps, {fetchPosts})(Posts);

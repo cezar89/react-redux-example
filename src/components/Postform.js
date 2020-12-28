@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
+import {createPost} from '../actions/postActions';
 
-export default class Postform extends Component {
+class Postform extends Component {
 
     constructor(props) {
         super(props);
@@ -15,6 +18,7 @@ export default class Postform extends Component {
     onChange(e) {
         this.setState({ [e.target.name]: e.target.value });
     }
+
     async onSubmit(e) {
         e.preventDefault();
 
@@ -23,16 +27,7 @@ export default class Postform extends Component {
             body: this.state.body
         }
 
-        const responseData = await fetch('https://jsonplaceholder.typicode.com/posts', {
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json'
-            },
-            body: JSON.stringify(post)
-        });
-
-        const responseJson = await responseData.json();
-        console.log('responseJson', responseJson);
+        await this.props.createPost(post);
     }
 
     render() {
@@ -69,3 +64,10 @@ export default class Postform extends Component {
         )
     }
 }
+
+// we should map our props to propTypes
+Postform.propTypes = {
+    createPost: PropTypes.func.isRequired
+};
+
+export default connect(null, {createPost})(Postform);
